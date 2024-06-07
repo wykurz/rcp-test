@@ -1,0 +1,23 @@
+[package]
+name = "rrm"
+version = "0.10.0"
+description = "Tool for removing files similar to rm but MUCH faster."
+license = "MIT"
+edition = "2021"
+
+[dev-dependencies]
+assert_cmd = "2"
+
+[dependencies]
+anyhow = "1.0"
+async-recursion = "1.1"
+common = { path = "../common" }
+structopt = "0.3"
+tokio = { version = "1.38", features = ["full", "parking_lot", "tracing"] }
+tracing = "0.1"
+
+[package.metadata.deb]
+maintainer = "Mateusz Wykurz <wykurz@gmail.com>"
+copyright = "2023, Mateusz Wykurz <wykurz@gmail.com>"
+depends = "libc6 (>= 2.27)"
+section = "utility"

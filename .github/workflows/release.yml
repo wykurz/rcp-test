@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+
+    - name: Install cargo-deb
+      run: cargo install cargo-deb
+
+    - name: Build Debian package
+      run: |
+        cargo deb -p rcp
+        cargo deb -p rlink
+        cargo deb -p rrm
+        cargo deb -p rcmp
+        zip rcp-debian-amd64-${{ github.event.release.tag_name }} target/debian/*.deb
+
+    - name: Upload to GitHub Release
+      uses: actions/upload-release-asset@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./rcp-debian-amd64-${{ github.event.release.tag_name }}.zip
+        asset_name: rcp-debian-amd64-${{ github.event.release.tag_name }}.zip
+        asset_content_type: application/zip

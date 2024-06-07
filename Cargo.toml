@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+
+members = [
+  "common",
+  "filegen",
+  "rcmp",
+  "rcp",
+  "rlink",
+  "rrm",
+]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+codegen-units = 8 # default 16
+debug = 1
+lto = "thin"
