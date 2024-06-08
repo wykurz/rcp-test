@@ -10,7 +10,7 @@ on:
         required: true
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
     permissions: write-all
 
@@ -24,8 +24,14 @@ jobs:
         toolchain: stable
         profile: minimal
 
-    - name: Install cargo-deb
+    - name: Install builders
       run: cargo install cargo-deb
+      run: cargo install cargo-generate-rpm
+
+  build-release-deb:
+    name: build-release-deb
+    needs: ['setup']
+    runs-on: ubuntu-latest
 
     - name: Build Debian package
       run: |
@@ -33,9 +39,9 @@ jobs:
         cargo deb -p rlink
         cargo deb -p rrm
         cargo deb -p rcmp
-        zip rcp-debian-amd64-${{ github.event.release.tag_name }}.zip target/debian/*.deb
-        echo $(pwd)/rcp-debian-amd64-${{ github.event.release.tag_name }}
-        ls -ld $(pwd)/rcp-debian-amd64-${{ github.event.release.tag_name }}*
+        zip rcp-deb-amd64-${{ github.event.release.tag_name }}.zip target/debian/*.deb
+        echo $(pwd)/rcp-deb-amd64-${{ github.event.release.tag_name }}
+        ls -ld $(pwd)/rcp-deb-amd64-${{ github.event.release.tag_name }}*
 
     - name: Upload to GitHub Release
       uses: actions/upload-release-asset@v1
@@ -43,6 +49,29 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./rcp-debian-amd64-${{ github.event.release.tag_name }}.zip
-        asset_name: rcp-debian-amd64-${{ github.event.release.tag_name }}.zip
+        asset_path: ./rcp-deb-amd64-${{ github.event.release.tag_name }}.zip
+        asset_name: rcp-deb-amd64-${{ github.event.release.tag_name }}.zip
+        asset_content_type: application/zip
+
+  build-release-rpm:
+    name: build-release-rpm
+    needs: ['setup']
+    runs-on: ubuntu-latest
+
+    - name: Build RPM package
+      run: |
+        cargo build --release
+        cargo generate-rpm
+        zip rcp-rpm-amd64-${{ github.event.release.tag_name }}.zip target/generate-rpm/*.rpm
+        echo $(pwd)/rcp-rpm-amd64-${{ github.event.release.tag_name }}
+        ls -ld $(pwd)/rcp-rpm-amd64-${{ github.event.release.tag_name }}*
+
+    - name: Upload to GitHub Release
+      uses: actions/upload-release-asset@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./rcp-rpm-amd64-${{ github.event.release.tag_name }}.zip
+        asset_name: rcp-rpm-amd64-${{ github.event.release.tag_name }}.zip
         asset_content_type: application/zip
