@@ -10,8 +10,9 @@ on:
         required: true
 
 jobs:
-  setup:
+  build-deb-package:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -21,17 +22,7 @@ jobs:
         toolchain: stable
         profile: minimal
     - name: Install builders
-      run: |
-        cargo install cargo-deb
-        cargo install cargo-generate-rpm
-    outputs:
-      version: ${{ env.VERSION }}
-
-  build-deb-package:
-    needs: ['setup']
-    runs-on: ubuntu-latest
-    permissions: write-all
-    steps:
+      run: cargo install cargo-deb
     - name: Build Debian package
       run: |
         cargo deb -p rcp
@@ -52,10 +43,18 @@ jobs:
         asset_content_type: application/zip
 
   build-rpm-package:
-    needs: ['setup']
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+    - name: Install builders
+      run: cargo install cargo-generate-rpm
     - name: Build RPM package
       run: |
         cargo build --release
