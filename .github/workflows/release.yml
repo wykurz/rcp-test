@@ -12,12 +12,11 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    permissions: write-all
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Set up Rust
-      uses: actions-rs/toolchain@v1
+      uses: actions-rs/toolchain@v2
       with:
         toolchain: stable
         profile: minimal
@@ -27,9 +26,12 @@ jobs:
         cargo install cargo-generate-rpm
     outputs:
       version: ${{ env.VERSION }}
-  deb:
+
+  build-deb-package:
     needs: ['setup']
     runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
     - name: Build Debian package
       run: |
         cargo deb -p rcp
@@ -48,9 +50,12 @@ jobs:
         asset_path: ./rcp-deb-amd64-${{ github.event.release.tag_name }}.zip
         asset_name: rcp-deb-amd64-${{ github.event.release.tag_name }}.zip
         asset_content_type: application/zip
-  rpm:
+
+  build-rpm-package:
     needs: ['setup']
     runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
     - name: Build RPM package
       run: |
         cargo build --release
