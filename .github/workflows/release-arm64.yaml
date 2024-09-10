@@ -31,11 +31,12 @@ jobs:
       run: cargo install cargo-deb
     - name: Build Debian package
       run: |
-        cargo deb --target=aarch64-unknown-linux-gnu -p rcp
-        cargo deb --target=aarch64-unknown-linux-gnu -p rlink
-        cargo deb --target=aarch64-unknown-linux-gnu -p rrm
-        cargo deb --target=aarch64-unknown-linux-gnu -p rcmp
-        cargo deb --target=aarch64-unknown-linux-gnu -p filegen
+        cross build --release --target=aarch64-unknown-linux-gnu
+        cargo deb --target=aarch64-unknown-linux-gnu --no-build -p rcp
+        cargo deb --target=aarch64-unknown-linux-gnu --no-build -p rlink
+        cargo deb --target=aarch64-unknown-linux-gnu --no-build -p rrm
+        cargo deb --target=aarch64-unknown-linux-gnu --no-build -p rcmp
+        cargo deb --target=aarch64-unknown-linux-gnu --no-build -p filegen
         zip rcp-deb-arm64-${{ github.event.release.tag_name }}.zip target/debian/*.deb
         echo $(pwd)/rcp-deb-arm64-${{ github.event.release.tag_name }}
         ls -ld $(pwd)/rcp-deb-arm64-${{ github.event.release.tag_name }}*
@@ -70,7 +71,7 @@ jobs:
       run: cargo install cargo-generate-rpm
     - name: Build RPM package
       run: |
-        cargo build --release --target=aarch64-unknown-linux-gnu
+        cross build --release --target=aarch64-unknown-linux-gnu
         cargo generate-rpm -p rcp
         cargo generate-rpm -p rlink
         cargo generate-rpm -p rrm
