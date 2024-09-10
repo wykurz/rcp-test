@@ -16,7 +16,13 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Set up Rust with cross compiliation
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+    - name: Add target
+      run: rustup target add aarch64-unknown-linux-gnu
+    - name: Set up cross compiliation
       uses: actions-rs/cargo@v1
       with:
         use-cross: true
@@ -49,7 +55,13 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Set up Rust with cross compiliation
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+    - name: Add target
+      run: rustup target add aarch64-unknown-linux-gnu
+    - name: Set up cross compiliation
       uses: actions-rs/cargo@v1
       with:
         use-cross: true
