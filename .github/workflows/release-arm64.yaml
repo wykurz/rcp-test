@@ -74,11 +74,11 @@ jobs:
       run: |
         ls -la target/
         tree target/
-        cargo generate-rpm --target-dir=--target-dir=target/aarch64-unknown-linux-gnu -p rcp
-        cargo generate-rpm --target-dir=--target-dir=target/aarch64-unknown-linux-gnu -p rlink
-        cargo generate-rpm --target-dir=--target-dir=target/aarch64-unknown-linux-gnu -p rrm
-        cargo generate-rpm --target-dir=--target-dir=target/aarch64-unknown-linux-gnu -p rcmp
-        cargo generate-rpm --target-dir=--target-dir=target/aarch64-unknown-linux-gnu -p filegen
+        cargo generate-rpm --target-dir=target/aarch64-unknown-linux-gnu -p rcp
+        cargo generate-rpm --target-dir=target/aarch64-unknown-linux-gnu -p rlink
+        cargo generate-rpm --target-dir=target/aarch64-unknown-linux-gnu -p rrm
+        cargo generate-rpm --target-dir=target/aarch64-unknown-linux-gnu -p rcmp
+        cargo generate-rpm --target-dir=target/aarch64-unknown-linux-gnu -p filegen
         zip rcp-rpm-arm64-${{ github.event.release.tag_name }}.zip target/generate-rpm/*.rpm
         echo $(pwd)/rcp-rpm-arm64-${{ github.event.release.tag_name }}
         ls -ld $(pwd)/rcp-rpm-arm64-${{ github.event.release.tag_name }}*
